@@ -35,7 +35,16 @@ namespace webapi_jwt
             services.AddDbContext<ApplicationDbContext>();
 
             // App Identity
-            services.AddIdentity<IdentityUser, IdentityRole>()
+            services.AddIdentity<IdentityUser, IdentityRole>((options =>
+                {
+                    // Password settings
+                    options.Password.RequireDigit = false;
+                    options.Password.RequiredLength = 6;
+                    options.Password.RequiredUniqueChars = 2;
+                    options.Password.RequireLowercase = true;
+                    options.Password.RequireNonAlphanumeric = false;
+                    options.Password.RequireUppercase = false;
+                }))
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -47,7 +56,7 @@ namespace webapi_jwt
                     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
                     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                    
+
                 })
                 .AddJwtBearer(cfg =>
                 {
@@ -81,7 +90,7 @@ namespace webapi_jwt
             app.UseMvc();
 
             // Certificar de que as tabelas foram criadas
-            dbContext.Database.EnsureCreated();            
+            dbContext.Database.EnsureCreated();
         }
     }
 }

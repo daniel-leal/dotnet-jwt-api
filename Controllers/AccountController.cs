@@ -30,40 +30,44 @@ namespace WebApiJwt.Controllers
             _signInManager = signInManager;
             _configuration = configuration;
         }
-        
+
         [HttpPost]
         public async Task<object> Login([FromBody] LoginDto model)
         {
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
-            
+
             if (result.Succeeded)
             {
                 var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Email);
                 return await GenerateJwtToken(model.Email, appUser);
             }
-            
+
             throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
         }
-       
+
         [HttpPost]
         public async Task<object> Register([FromBody] RegisterDto model)
         {
-            var user = new IdentityUser
+            if (ModelState.IsValid)
             {
-                UserName = model.Email, 
-                Email = model.Email
-            };
-            var result = await _userManager.CreateAsync(user, model.Password);
+                var user = new IdentityUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email
+                };
 
-            if (result.Succeeded)
-            {
-                await _signInManager.SignInAsync(user, false);
-                return await GenerateJwtToken(model.Email, user);
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    await _signInManager.SignInAsync(user, false);
+                    return await GenerateJwtToken(model.Email, user);
+                }
             }
-            
-            throw new ApplicationException(result.Errors.FirstOrDefault().Description);
+
+            throw new ApplicationException("INVALID_REGISTER_ATTEMPT");
         }
-        
+
         private async Task<object> GenerateJwtToken(string email, IdentityUser user)
         {
             var claims = new List<Claim>
@@ -87,7 +91,7 @@ namespace WebApiJwt.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        
+
         public class LoginDto
         {
             [Required]
@@ -97,15 +101,21 @@ namespace WebApiJwt.Controllers
             public string Password { get; set; }
 
         }
-        
+
         public class RegisterDto
         {
             [Required]
             public string Email { get; set; }
 
             [Required]
+            [DataType(DataType.Password)]
             [StringLength(100, ErrorMessage = "PASSWORD_MIN_LENGTH", MinimumLength = 6)]
             public string Password { get; set; }
+
+            [Required]
+            [DataType(DataType.Password)]
+            [Compare("Password")]
+            public string PasswordConfirmation { get; set; }
         }
     }
 }
