@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Entities.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,7 +36,7 @@ namespace webapi_jwt
             services.AddDbContext<ApplicationDbContext>();
 
             // App Identity
-            services.AddIdentity<IdentityUser, IdentityRole>((options =>
+            services.AddIdentity<WebAppUser, IdentityRole>((options =>
                 {
                     // Password settings
                     options.Password.RequireDigit = false;

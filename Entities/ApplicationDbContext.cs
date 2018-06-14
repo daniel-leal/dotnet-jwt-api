@@ -1,3 +1,4 @@
+using Entities.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,6 +10,8 @@ namespace WebApiJwt
         {
             optionsBuilder.UseSqlServer(GetConnectionString());
         }
+
+        public DbSet<WebAppUser> WebApp {get; set;}
 
         private static string GetConnectionString()
         {

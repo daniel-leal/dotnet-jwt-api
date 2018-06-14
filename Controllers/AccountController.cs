@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -16,13 +17,13 @@ namespace WebApiJwt.Controllers
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
-        private readonly SignInManager<IdentityUser> _signInManager;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<WebAppUser> _signInManager;
+        private readonly UserManager<WebAppUser> _userManager;
         private readonly IConfiguration _configuration;
 
         public AccountController(
-            UserManager<IdentityUser> userManager,
-            SignInManager<IdentityUser> signInManager,
+            UserManager<WebAppUser> userManager,
+            SignInManager<WebAppUser> signInManager,
             IConfiguration configuration
             )
         {
@@ -50,7 +51,7 @@ namespace WebApiJwt.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new IdentityUser
+                var user = new WebAppUser
                 {
                     UserName = model.Email,
                     Email = model.Email
@@ -68,7 +69,7 @@ namespace WebApiJwt.Controllers
             throw new ApplicationException("INVALID_REGISTER_ATTEMPT");
         }
 
-        private async Task<object> GenerateJwtToken(string email, IdentityUser user)
+        private async Task<object> GenerateJwtToken(string email, WebAppUser user)
         {
             var claims = new List<Claim>
             {
