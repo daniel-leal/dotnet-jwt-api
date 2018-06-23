@@ -11,9 +11,19 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace WebApiJwt.Controllers
 {
+    public class Validate
+    {
+        public int Key { get; set; }
+
+        public List<string> Message { get; set; }
+    }
+
+
     [Route("[controller]/[action]")]
     public class AccountController : Controller
     {
@@ -49,6 +59,8 @@ namespace WebApiJwt.Controllers
         [HttpPost]
         public async Task<object> Register([FromBody] RegisterDto model)
         {
+            var v = new Validate() { Key = 0, Message = new List<string>() };
+
             if (ModelState.IsValid)
             {
                 var user = new WebAppUser
@@ -66,7 +78,16 @@ namespace WebApiJwt.Controllers
                 }
             }
 
-            throw new ApplicationException("INVALID_REGISTER_ATTEMPT");
+            foreach (var x in ModelState)
+            {
+                foreach (var erro in x.Value.Errors)
+                {
+                    v.Key = 999;
+                    v.Message.Add(erro.ErrorMessage);
+                }
+            }
+
+            return Json(v);
         }
 
         private async Task<object> GenerateJwtToken(string email, WebAppUser user)

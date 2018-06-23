@@ -90,8 +90,8 @@ namespace webapi_jwt
             // app.UseHttpsRedirection();
             app.UseMvc();
 
-            // Certificar de que as tabelas foram criadas
-            dbContext.Database.EnsureCreated();
+            // Certificar de que as tabelas foram criadas ao startar o projeto
+            // dbContext.Database.EnsureCreated();
         }
     }
 }
