@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 
 namespace Entities.Identity
@@ -9,5 +10,7 @@ namespace Entities.Identity
 
         [PersonalData]
         public string AvatarUrl { get; set; }
+        
+        public List<Todo> Todos { get; set; }
     }
 }

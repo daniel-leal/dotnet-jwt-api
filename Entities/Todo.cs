@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using Entities.Identity;
 
 namespace Entities
@@ -9,11 +10,14 @@ namespace Entities
         public int TodoId { get; set; }
 
         [Required]
+        [ForeignKey("WebAppUser")]
+        public string UserId { get; set; }
+
+        [Required]
         public string Description { get; set; }
 
         // Relationship
-        [Required]
-        public WebAppUser User { get; set; }
+        public virtual WebAppUser WebAppUser { get; set; }
     }
 }
 

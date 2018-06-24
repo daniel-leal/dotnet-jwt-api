@@ -10,8 +10,8 @@ using WebApiJwt;
 namespace webapijwt.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20180622023156_CreateTodo")]
-    partial class CreateTodo
+    [Migration("20180624174550_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -221,8 +221,8 @@ namespace webapijwt.Migrations
 
             modelBuilder.Entity("Entities.Todo", b =>
                 {
-                    b.HasOne("Entities.Identity.WebAppUser", "User")
-                        .WithMany()
+                    b.HasOne("Entities.Identity.WebAppUser", "WebAppUser")
+                        .WithMany("Todos")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

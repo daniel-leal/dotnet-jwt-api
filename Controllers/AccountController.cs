@@ -23,6 +23,13 @@ namespace WebApiJwt.Controllers
         public List<string> Message { get; set; }
     }
 
+    public class Auth
+    {
+        public string UserId { get; set; }
+        public string Email { get; set; }
+        public string Token { get; set; }
+    }
+
 
     [Route("[controller]/[action]")]
     public class AccountController : Controller
@@ -45,15 +52,30 @@ namespace WebApiJwt.Controllers
         [HttpPost]
         public async Task<object> Login([FromBody] LoginDto model)
         {
+            var v = new Validate() { Key = 0, Message = new List<string>() };
+
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
 
             if (result.Succeeded)
             {
                 var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Email);
-                return await GenerateJwtToken(model.Email, appUser);
-            }
+                var token = await GenerateJwtToken(model.Email, appUser);
 
-            throw new ApplicationException("INVALID_LOGIN_ATTEMPT");
+                Auth a = new Auth()
+                {
+                    UserId = appUser.Id,
+                    Token = token.ToString(),
+                    Email = appUser.Email
+                };
+
+                return a;
+            }
+            else
+            {
+                v.Key = 0;
+                v.Message.Add("Invalid Email or Password");
+                return Json(v);
+            }
         }
 
         [HttpPost]
@@ -66,7 +88,9 @@ namespace WebApiJwt.Controllers
                 var user = new WebAppUser
                 {
                     UserName = model.Email,
-                    Email = model.Email
+                    Email = model.Email,
+                    Name = model.Name,
+                    AvatarUrl = model.AvatarUrl,
                 };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
@@ -76,16 +100,25 @@ namespace WebApiJwt.Controllers
                     await _signInManager.SignInAsync(user, false);
                     return await GenerateJwtToken(model.Email, user);
                 }
-            }
-
-            foreach (var x in ModelState)
-            {
-                foreach (var erro in x.Value.Errors)
+                else
                 {
                     v.Key = 999;
-                    v.Message.Add(erro.ErrorMessage);
+                    v.Message = result.Errors.Select(x => x.Description).ToList();
+                    return Json(v);
                 }
             }
+            else
+            {
+                foreach (var x in ModelState)
+                {
+                    foreach (var erro in x.Value.Errors)
+                    {
+                        v.Key = 999;
+                        v.Message.Add(erro.ErrorMessage);
+                    }
+                }
+            }
+
 
             return Json(v);
         }
@@ -138,6 +171,12 @@ namespace WebApiJwt.Controllers
             [DataType(DataType.Password)]
             [Compare("Password")]
             public string PasswordConfirmation { get; set; }
+
+            // WebApp Properties
+            [Required]
+            public string Name { get; set; }
+
+            public string AvatarUrl { get; set; }
         }
     }
 }

@@ -219,8 +219,8 @@ namespace webapijwt.Migrations
 
             modelBuilder.Entity("Entities.Todo", b =>
                 {
-                    b.HasOne("Entities.Identity.WebAppUser", "User")
-                        .WithMany()
+                    b.HasOne("Entities.Identity.WebAppUser", "WebAppUser")
+                        .WithMany("Todos")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
