@@ -159,21 +159,21 @@ namespace WebApiJwt.Controllers
 
         public class RegisterDto
         {
-            [Required]
+            [Required(ErrorMessage = "Favor preencher o campo Email")]
             public string Email { get; set; }
 
-            [Required]
+            [Required(ErrorMessage="Favor preencher o campo Senha")]
             [DataType(DataType.Password)]
             [StringLength(100, ErrorMessage = "PASSWORD_MIN_LENGTH", MinimumLength = 6)]
             public string Password { get; set; }
 
             [Required]
             [DataType(DataType.Password)]
-            [Compare("Password")]
+            [Compare("Password", ErrorMessage="As senhas não conferem")]
             public string PasswordConfirmation { get; set; }
 
             // WebApp Properties
-            [Required]
+            [Required(ErrorMessage="Favor preencher o campo Nome")]
             public string Name { get; set; }
 
             public string AvatarUrl { get; set; }

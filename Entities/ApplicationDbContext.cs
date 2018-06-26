@@ -19,7 +19,8 @@ namespace WebApiJwt
         {
             const string databaseName = "webapijwt";
             const string databaseUser = "sa";
-            const string databasePass = "123";
+            // const string databasePass = "123";
+            const string databasePass = "reallyStrongPwd123";
             
             return $"Server=localhost;" +
                    $"Database={databaseName};" +
