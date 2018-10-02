@@ -59,7 +59,7 @@ namespace WebApiJwt.Controllers
             if (result.Succeeded)
             {
                 var appUser = _userManager.Users.SingleOrDefault(r => r.Email == model.Email);
-                var token = await GenerateJwtToken(model.Email, appUser);
+                var token = GenerateJwtToken(model.Email, appUser);
 
                 Auth a = new Auth()
                 {
@@ -98,7 +98,7 @@ namespace WebApiJwt.Controllers
                 if (result.Succeeded)
                 {
                     await _signInManager.SignInAsync(user, false);
-                    return await GenerateJwtToken(model.Email, user);
+                    return GenerateJwtToken(model.Email, user);
                 }
                 else
                 {
@@ -123,7 +123,7 @@ namespace WebApiJwt.Controllers
             return Json(v);
         }
 
-        private async Task<object> GenerateJwtToken(string email, WebAppUser user)
+        private object GenerateJwtToken(string email, WebAppUser user)
         {
             var claims = new List<Claim>
             {

@@ -9,7 +9,6 @@ namespace Entities
         [Key]
         public int TodoId { get; set; }
 
-        [Required]
         [ForeignKey("WebAppUser")]
         public string UserId { get; set; }
 
@@ -17,7 +16,7 @@ namespace Entities
         public string Description { get; set; }
 
         // Relationship
-        public virtual WebAppUser WebAppUser { get; set; }
+        public virtual WebAppUser User { get; set; }
     }
 }
 

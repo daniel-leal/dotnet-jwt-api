@@ -29,12 +29,15 @@ namespace webapi_jwt.Controllers
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IEnumerable<Todo> GetTodos()
         {
-            var userId = HttpContext.User.Claims.Where(c => c.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
-            return _context.Todos.Where(t => t.UserId == userId.Value);
+            var user = HttpContext.User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .FirstOrDefault();
+            return _context.Todos.Where(t => t.UserId == user.Value);
         }
 
         // GET: api/Todos/5
         [HttpGet("{id}")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> GetTodo([FromRoute] int id)
         {
             if (!ModelState.IsValid)
@@ -42,7 +45,13 @@ namespace webapi_jwt.Controllers
                 return BadRequest(ModelState);
             }
 
-            var todo = await _context.Todos.FindAsync(id);
+            var user =  HttpContext.User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .FirstOrDefault();
+
+            var todo = await  _context.Todos
+                .Include(owner => owner.User)
+                .FirstOrDefaultAsync(x => x.TodoId == id && x.UserId == user.Value);
 
             if (todo == null)
             {
@@ -89,8 +98,15 @@ namespace webapi_jwt.Controllers
 
         // POST: api/Todos
         [HttpPost]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> PostTodo([FromBody] Todo todo)
         {
+            var user =  HttpContext.User.Claims
+                .Where(c => c.Type == ClaimTypes.NameIdentifier)
+                .FirstOrDefault();
+
+            todo.UserId = user.Value;
+
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);

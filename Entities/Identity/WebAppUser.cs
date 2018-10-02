@@ -10,7 +10,5 @@ namespace Entities.Identity
 
         [PersonalData]
         public string AvatarUrl { get; set; }
-        
-        public List<Todo> Todos { get; set; }
     }
 }
